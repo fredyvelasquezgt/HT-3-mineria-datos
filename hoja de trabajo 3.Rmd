@@ -1,1 +1,85 @@
+---
+title: "hoja de trabajo 3"
+output:
+  html_document: default
+  pdf_document: default
+date: "2023-03-02"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Cargar los datos
+```{r include=FALSE}
+library(tidyverse)
+
+data <- read.csv('./train.csv')
+
+# Analisis exploratorio inicial
+
+data<-data[order(-data$YearBuilt),]
+data<-head(data,n=10)
+
+pregunta1<-ggplot(data=data, aes(x=reorder(Id,SalePrice) , y=SalePrice,fill=factor(YearBuilt) )) +
+  geom_bar(stat="identity")+theme_minimal()+
+  scale_y_continuous(labels=scales::dollar)
+  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
+  labs(title="Ultimas casas construidas", x="Id", y="Precio")
+
+data<-data[order(-data$SalePrice),]
+```
+
+### ¿Cuál es el precio de las casas más recientes construidas?
+
+```{r }
+pregunta1
+```
+
+Como se observa en la grafica la casa identificada con el id **`r data[1,1] `** con un estilo de viviendo **`r data$BldgType[1]`** (Unifamiiliar), y dicho terreno cuenta con una cantidad de **`r data$LotArea[1]`** de pies cuadrados, se encuentra a un precio de **`r data$SalePrice[1]`** dolares, siendo la mas cara de las casas mas recientes. Cabe mencionar que esta casa fue construida en el año **`r data$YearBuilt[1]`**. Ademas, cabe mencionar que las ultimas casas construidas tuvieron en su mayoria el mismo estilo de vivienda. Y se obtuvo que el promedio del tamaño de estas recientes casas es de **`r mean(data$LotArea)`** dolares.
+
+
+```{r include=FALSE}
+pregunta1.1<-ggplot(data=data, aes(x=reorder(Id,SalePrice) , y=SalePrice,fill=factor(BldgType) )) +
+  geom_bar(stat="identity")+theme_minimal()+
+  scale_y_continuous(labels=scales::dollar)
+  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))
+  
+```
+
+
+```{r}
+pregunta1.1
+```
+
+### ¿Cuántas casas se han remodelado en el transcurso de los años?
+
+
+```{r include=FALSE}
+data<-read.csv('./train.csv')
+
+A<-data$YearBuilt==data$YearRemodAdd
+Total<-length(A)
+Remodelada<-sum(A, na.rm = TRUE)
+NoRemodelada<-length(A)-Remodelada
+# Pie Chart with Percentages
+slices <- c(Remodelada, NoRemodelada)
+lbls <- c("Remodelada", "No remodelada")
+pct <- round(slices/sum(slices)*100)
+lbls <- paste(lbls, pct) # add percents to labels
+lbls <- paste(lbls,"%",sep="") # ad % to labels
+pie(slices,labels = lbls, col=rainbow(length(lbls)),
+    main="Porcentaje de casas remodeladas")
+  
+```
+
+```{r }
+pie(slices,labels = lbls, col=rainbow(length(lbls)),
+    main="Porcentaje de casas remodeladas")
+```
+
+Como se observa en la grafica de pie el **52%** de las casas registradas en la base de datos han sido remodeladas, la mayoria de estos debido a que fueron construidas desde hace años. 
+
 
