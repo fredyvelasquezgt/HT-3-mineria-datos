@@ -82,4 +82,332 @@ pie(slices,labels = lbls, col=rainbow(length(lbls)),
 
 Como se observa en la grafica de pie el **52%** de las casas registradas en la base de datos han sido remodeladas, la mayoria de estos debido a que fueron construidas desde hace años. 
 
+### ¿Cuáles son las casas más grandes?
+
+```{r include=FALSE}
+library(dplyr)
+library(scales)
+library(ggplot2)
+data<-read.csv('train.csv')
+data<-data[order(-data$LotArea),]
+data<-head(data,n=5)
+pregunta3<-ggplot(data=data, aes(x=reorder(Id,LotArea) , y=LotArea,fill=Id )) +
+  geom_bar(stat="identity",show.legend=FALSE)+
+  scale_y_continuous(labels = unit_format(unit = "ft^2", scale = 1))
+  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))
+  
+  
+  
+```
+
+```{r}
+pregunta3
+```
+
+Como se observa la casa mas grande es la casa con identificador **`r data$Id[1]`** con un precio de **`r data$SalePrice[1]`** dolares. Sienda una vivienda de tipo **`r data$BldgType[1]`** (Uni familiar), con una evaluacion de material de construccion de **`r data$OverallQual[1]`/10** siendo una puntuacion alta, y una puntuacion de **`r data$OverallCond[1]`/10** en condicion de la casa, siendo una nota relativamente baja, esto debido a que el año de construccion de esta casa es vieja, fue construida el año **`r data$YearBuilt[1]`** y no ha tenido remoledaciones, sin embargo su gran tamaño lo vale, liderando las casa con una cantidad de **`r data$LotArea[1]`** pies cuadrados equivalente a 19,996.91 metros cuadrados. Un dato curioso a mencionar es que estas 5 casas mas grandes, todas fueron construidas durante los años 50 o mas. Siendo construidas en los siguientes años, **`r data$YearBuilt`**. Sin embargo por su edad tiene una nota promedio de **`r mean(data$OverallCond)`/10** demostrando que su edad afecta la estructura. No obstante, el tamaño promedio de estas 5 es de **`r mean(data$LotArea)`** pies cuadrados, equivalente a 13467.50 metros cuadrados.
+
+### ¿Cuáles son los tipos de viviendas con mejores puntuaciones?
+
+```{r include=FALSE }
+ library(dplyr)
+  library(scales)
+  library(ggplot2)
+  
+  data<-read.csv('train.csv')
+  
+  tipoVivienda<-data[,'BldgType']
+  punt<-data[,'OverallCond'] 
+  acabado<-data[,'OverallQual'] 
+  
+  
+  
+  ask4<-data.frame(tipoVivienda,punt,acabado)
+  
+  
+  pregunta4<-ggplot(data, aes(tipoVivienda, punt, fill=tipoVivienda)) +           
+    geom_bar(position = "dodge",
+             stat = "summary",
+             fun = "mean",
+             show.legend=FALSE)+labs(title="Tipos de vivienda con mejor puntuacion en estado de casa")
+  
+  pregunta4.1<-ggplot(data, aes(tipoVivienda, acabado, fill=tipoVivienda)) +           
+    geom_bar(position = "dodge",
+             stat = "summary",
+             fun = "mean",
+             show.legend=FALSE)+labs(title="Tipos de vivienda con mejor puntuacion en acabados")
+```
+
+```{r}
+pregunta4
+```
+
+Como se observa en la grafica la puntuacion mas alta la posee la vivienda 2fmCom que son casas para dos familias, y en segundo lugar se tienen las casas 1Fam casas para una familia. Sin embargo, en esta grafica vemos la puntuacion del estado de las casas, ahora veremos la calidad de acabados de cada tipo de vivienda.
+
+```{r}
+pregunta4.1
+```
+
+En las ultimas dos graficas se demostro que las viviendas para dos familias tenian mejor puntuacion en temas de estado de la vivienda, sin embargo, la ultima grafica demostro que las viviendas con mejores acabados son las viviendas TwnhsE que son las casas adosadas. Y nuevamente en segundo lugar las casas unifamiliar.
+
+### ¿Cual es el precio de venta mas alto registrado?
+
+```{r include=FALSE}
+library(ggplot2)
+datos<-read.csv('train.csv')
+id<-datos[,'Id']
+precio<-datos[,'SalePrice']
+q1<-data.frame(id, precio)
+ask1<-q1[order(-q1$precio),]
+ask1f<-head(ask1,n=5)
+pregunta1A<-ggplot(data=ask1f, aes(x=reorder(id,-precio) , y=precio,fill=id)) +
+  geom_bar(stat="identity")+
+  
+  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
+  labs(title=" Cual es el precio de venta mas alto registrado?", x="Id de la propiedad", y="Precio")
+  
+  
+```
+
+```{r}
+pregunta1A
+```
+
+Como se puede observar en la grafica de barras anterior, la cada que mas valor ha tenido es la que se encuentra con el Id 692, siendo la propiedad con mayor precio de venta, con un precio de 755000 dolares, seguido con la propiedad 1183 con un precio de venta de 745000
+
+### ¿Que estilo de vivienda es el mas vendido?
+
+```{r include=FALSE}
+library(ggplot2)
+id<-datos[,'Id']
+esti<-datos[,'HouseStyle']
+df<-data.frame(esti)
+ndf<-aggregate(df$esti, df, length)
+q2<-data.frame(ndf)
+q3<-head(q2)
+pregunta2A<-ggplot(data=q3, aes(x=reorder(esti, x) , y=x,fill=esti)) +
+  geom_bar(stat="identity")+
+  
+  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
+  labs(title=" Que estilo de vivienda es el mas vendido?", x="Estilo de la vivienda", y="Veces vendida")
+  
+  
+```
+
+```{r}
+pregunta2A
+```
+
+La grafica antes vista tiene una forma bastante vistosa, como se puede apreciar el estilo de vivienda mas vendido es **`r q3[3,1] `**, la cual sobre sale con una cantidad extremadamente vistosa y para aclararlo este estilo hace referencia a que la casa cuenta con un solo piso o un solo nivel. El estilo que le continua es **`r q3[6,1] `**, por lo que se sabe que el estilo que le continua es de dos niveles. 
+
+### ¿Cuales son los tipos de ventas mas utilizados?
+
+```{r include=FALSE}
+library(ggplot2)
+esven<-datos[,'SaleType']
+de<-data.frame(esven)
+nde<-aggregate(de$esven, de, length)
+pregunta3A<-ggplot(data=nde, aes(x=reorder(esven, x) , y=x,fill=esven)) +
+  geom_bar(stat="identity")+
+  
+  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
+  labs(title="  Cuales son los tipos de ventas mas utilizados?", x="Tipo de venta", y="Veces utiizada")
+  
+  
+```
+
+```{r}
+pregunta3A
+```
+
+En la grafica anterior, claramente se puede apreciar que la diferencia es abrupta en el metodo o el tipo de venta de la propiedad, dicho metodo es el **`r nde[9,1] `**, el cual quitando la abreviatura seria: "Warranty Deed", o traducido, con garantia escrita, lo que se conoce como el metodo convencional o tradicional.
+
+### En que condiciones son vendidas y cual es la que sobresale
+
+```{r include=FALSE}
+library(ggplot2)
+condi<-datos[, 'SaleCondition']
+dc<-data.frame(condi)
+ndc<-aggregate(dc$condi, dc, length)
+pregunta4A<-ggplot(data=ndc, aes(x=reorder(condi, x) , y=x,fill=condi)) +
+  geom_bar(stat="identity")+
+  
+  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
+  labs(title="En que condiciones son vendidas y cual es la que sobresale", x="COndiciones", y="Veces utilizada")
+  
+  
+```
+
+```{r}
+pregunta4A
+```
+
+La variable, condiciones de venta hace referencia a bajo que cirscuntancias fue vendida la propiedad, en este caso existen 6 tipos de condiciones, pero, como se puede apreciar en la grafica anterior, la condicion en la que se vende mayormente es de **`r ndc[5,1]`**, lo cual es considerado como lo Normal, la condicion que le sigue, es **`r ndc[6,1]`**, el cual es parcial, lo que hace referencia a que la casa aun no estaba completa cuando fue comprada, esto es mayormente con las casas nuevas.
+
+### ¿Cual es el mes que registra una mayor venta?
+
+```{r include=FALSE}
+library(ggplot2)
+mesi<-datos[,'MoSold']
+dm<-data.frame(mesi)
+ndm<-aggregate(dm$mesi, dm, length)
+pregunta5A<-ggplot(data=ndm, aes(x=reorder(mesi, x) , y=x,fill=mesi)) +
+  geom_bar(stat="identity")+
+  
+  theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
+  labs(title="Cual es el mes que registra una mayor venta?", x="Mes de la compra", y="Veces utilizada")
+  
+  
+```
+
+```{r}
+pregunta5A
+```
+
+Como se puede apreciar en la grafica anterior, el mes que cuenta con los mayores registros de ventas en el numero **`r ndm[6,1]`**, o lo que es igual a Junio, seguido del mes **`r ndm[7,1]`**, lo que es Julio. 
+
+
+### ¿En qué zona se han hecho más ventas?
+```{r include=FALSE}
+zona<-data[,'MSZoning']
+df<-data.frame(zona)
+table_zona<-table(df$zona)
+view(table_zona)
+lbls <- c("C (all)", "FV", "RH", "RL", "RM")
+pct <- round(table_zona/sum(table_zona)*100)
+lbls <- paste(lbls, pct)
+lbls <- paste(lbls,"%",sep="")
+pie(table_zona, labels = lbls, col=rainbow(length(lbls)), main="")
+```
+
+```{r}
+pie(table_zona, labels = lbls, col=rainbow(length(lbls)), main="")
+```
+
+Del gráfico de pie anterior, se puede concluir que la zona en que más ventas se han realizado es RL con un 79%, lo que significa que la zona Residential Low Density es donde han ocurrido la mayoría de las ventas, siendo 1151 ventas de 1460 ventas realizadas en total.
+
+
+### ¿Qué tipo de carretera de acceso tienen la mayoría de las viviendas?
+```{r include=FALSE}
+calle<-data[,'Street']
+df1<-data.frame(calle)
+table_calle<-table(df1$calle)
+view(table_calle)
+lbls1 <- c("Gravel", "Paved")
+pct1 <- round(table_calle/sum(table_calle)*100)
+lbls1 <- paste(lbls1, pct1)
+lbls1 <- paste(lbls1,"%",sep="")
+pie(table_calle, labels = lbls1, col=rainbow(length(lbls1)), main="")
+```
+
+```{r}
+pie(table_calle, labels = lbls1, col=rainbow(length(lbls1)), main="")
+```
+
+En base al gráfico anterior, se concluye que la mayoría de las viviendas cuentan con una carretera de acceso pavimentada, siendo una cantidad de 1454 viviendas con carretera pavimentada, dejando unas 6 viviendas con carretera de grava.
+
+### ¿Qué forma tienen las viviendas que más se han vendido?
+```{r include=FALSE}
+library(ggplot2)
+id<-datos[,'Id']
+forma<-datos[,'LotShape']
+df2<-data.frame(forma)
+table_forma<-table(df2$forma)
+view(table_forma)
+ndf<-aggregate(df2$forma, df2, length)
+q<-data.frame(ndf)
+q1<-head(q)
+pregunta3E<-ggplot(data=q1, aes(x=reorder(forma, x) , y=x,fill=forma)) +
+            geom_bar(stat="identity")+
+  
+            theme(axis.text.x = element_text(angle = 60, vjust = 1, hjust=1))+
+            labs(title="Que forma tienen las viviendas que más se han vendido?", x="Forma de la vivienda", y="Cantidad")
+```
+
+```{r}
+pregunta3E
+```
+
+En el gráfico observamos que de todas las ventas, las viviendas de forma regular son las que más se han vendido. de 1460 viviendas, 925 tienen forma regular (Reg), 484 tienen forma ligeramente irregular (IR1), 41 tienen forma moderadamente irregular (IR2) y 10 tienen forma irregular (IR3).
+
+## 3. Analisis de grupos
+
+### Variables utilizadas:
+#### -Cuantitativas:
+
+LotFrontage: Pies lineales de calle conectados a la propiedad.
+
+```{r}
+scatter.smooth(data$LotFrontage, data$SalePrice)
+```
+
+LotArea: Tamaño del lote en pies cuadrados.
+
+```{r}
+scatter.smooth(data$LotArea, data$SalePrice)
+```
+
+BsmtUnfSF: Pies cuadrados sin terminar del área del sótano.
+
+```{r}
+scatter.smooth(data$BsmtUnfSF, data$SalePrice)
+```
+
+TotalBsmtSF: Pies cuadrados totales del área del sótano.
+
+```{r}
+scatter.smooth(data$TotalBsmtSF, data$SalePrice)
+```
+
+1stFlrSF: Pies cuadrados del primer piso.
+
+```{r}
+scatter.smooth(data$X1stFlrSF, data$SalePrice)
+```
+
+GrLivArea: Pies cuadrados de superficie habitable sobre el nivel del suelo (suelo).
+
+```{r}
+scatter.smooth(data$GrLivArea, data$SalePrice)
+```
+
+GarageArea: Tamaño del garaje en pies cuadrados.
+
+```{r}
+scatter.smooth(data$GarageArea, data$SalePrice)
+```
+#### -Cualitativas:
+
+YearBuilt: Fecha original de construcción.
+
+```{r}
+scatter.smooth(data$YearBuilt, data$SalePrice)
+```
+
+YearRemodAdd: Fecha de remodelación (igual que la fecha de construcción si no hay remodelaciones ni adiciones).
+
+```{r}
+scatter.smooth(data$YearRemodAdd, data$SalePrice)
+```
+
+GarageYrBlt: Año de construcción del garaje.
+
+```{r}
+scatter.smooth(data$GarageYrBlt, data$SalePrice)
+```
+
+MoSold: Mes vendido (MM).
+
+```{r}
+scatter.smooth(data$MoSold, data$SalePrice)
+```
+
+Las gráficas anteriores nos ayuda a determinar qué tanta correlación existe entre cada una de las variables y el precio de venta de la vivienda. Mientras más cerca los puntos estén de la línea, mayor es la correlación.
+
+De estas gráficas se puede concluir que las variables seleccionadas están lo suficientemente relacionadas con el precio de venta, éstas variables se utilizarán para la realización de los árboles de decisión. Se tomó en cuenta cada variable para determinar si es prudente usarlas en todos los casos o no,
+para evitar análisis innecesarios e irrelevantes.
+
+## 4. Set de datos entrenamiento y prueba
+
+Para esta seccion fue necesario establecer el porcentaje de datos que utilizara cada conjunto, donde el 70% de datos sera para los datos de prueba y el; 30% para los datos de entrenamiento. Cabe mencionar, que las variables puestas a prueba son las variables numericas
+
 
